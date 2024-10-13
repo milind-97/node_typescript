@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+    userservice:
+        hostname: user-service
+        image: user-service
+        build:
+            context: ./userService # Ensure the context is the current directory for the Dockerfile
+            dockerfile: Dockerfile
+        ports:
+            - '3000:3000'
+    adminservice:
+        hostname: admin-service
+        image: admin-service
+        build:
+            context: ./adminService
+            dockerfile: Dockerfile
+        ports:
+            - '3001:3000'
+        environment:
+            MONGO_URI: 'mongodb://mongo:27017/node_task' # Use the service name 'mongo' to connect
+        depends_on:
+            - mongo # Ensure mongo starts before the app
+
+    mongo:
+        image: mongo:latest
+        ports:
+            - '27017:27017'
+        volumes:
+            - mongo-data:/data/db
+
+# Volume for persisting MongoDB data
+volumes:
+    mongo-data:
